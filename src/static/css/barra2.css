@@ -1,0 +1,257 @@
+#navbar{
+
+  width:auto;
+
+  height:3.28em;
+
+  float: right;
+
+  text-align: right;
+
+  margin: 0.2px;
+}
+
+#navbar .inbar{
+
+  display:block;
+
+  height:100%;
+
+}
+
+/*Barra desplegable---------------------------------*/
+
+.inbar li ul {
+  display:none;
+	min-width:110px;
+  float: left;
+  background-color: #294471;
+}
+
+.inbar li:hover > ul {
+  display:block;
+  background-color: #294471;
+  float: left;
+}
+
+.nav li ul li {
+  float: left;
+  background-color: #294471;
+  width: 110px;
+}
+
+.nav li ul li a span {
+  width: 110px;
+}
+
+.inbar #usuario li a span{
+  width: 110px;
+  font-size: smaller;
+}
+
+/*---------------------------------------------------*/
+
+#navbar ul, #navbar ul li{
+
+  border:0px;
+
+  margin:0px;
+
+  padding:0px;
+
+  list-style:none;
+
+  /*height:100%;*/
+
+  line-height:36px;
+}
+
+#navbar ul li{
+
+  float:left;
+
+  display:block;
+
+  line-height:36px;
+}
+
+#navbar ul .paranga{
+  width: 110px;
+  align-content: center;
+  text-align: center;
+}
+
+.paranga ul li a span{
+  border-top: .75px solid rgba(0,0,0,.1);
+}
+
+#navbar ul li a {
+
+  color: #3f69af;
+  font-size: smaller;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+
+  text-decoration:none;
+
+  display:block;
+
+  text-shadow: 0.5px 0.5px 2px rgba(0,0,0,0.35);
+}
+
+#navbar ul li a span{
+
+  padding:0 10px;
+
+  height:100%;
+
+  line-height:50px;
+
+  display:block;
+
+  margin-left: 0px;
+
+  background-color: #e6e6e6;
+}
+
+#navbar .navhome a, #navbar .navhome a:hover{
+
+
+  height:100%;
+
+  line-height:45px;
+}
+
+#navbar .navhome a span, #navbar .navhome a:hover span{
+
+  color: #d91522;
+
+
+  height:100%;
+
+  line-height:45px;
+
+}
+
+#navbar .navhome a span, #navbar .navhome a:focus span{
+
+  color:#FFF;
+
+
+  height:100%;
+
+  line-height:50px;
+
+}
+
+#navbar ul li a:hover{
+
+
+  height:100%;
+
+  line-height:45px;
+}
+
+#navbar ul li a:hover span{
+
+  color: #d91522;
+
+  height:100%;
+
+  line-height:45px;
+
+  text-shadow: 1px 4px 2px rgba(0,0,0,0.35);
+
+  /*border-bottom: medium solid #4370bb;*/
+  /*border-top: medium solid #071773;*/
+}
+
+/*Barra de navegación en listas---------------------------------*/
+#linkbar{
+
+  width:auto;
+
+  height:36px;
+
+  float: left;
+
+  text-align: left;
+
+  margin: 1%;
+
+  padding-bottom: 5%;
+}
+
+#linkbar .inlinkbar{
+
+  display:block;
+
+  height:36px;
+
+}
+
+#linkbar ul, #linkbar ul li{
+
+  border:0px;
+
+  margin:0px;
+
+  padding:0px;
+
+  list-style:none;
+
+  height:36px;
+
+  line-height:36px;
+}
+
+#linkbar ul li{
+
+  float:left;
+
+  display:block;
+
+  line-height:36px;
+}
+
+
+#linkbar ul li a{
+
+  color: #294471;
+  font-size: smaller;
+  font-family: 'Montserrat', sans-serif;
+
+  text-decoration:none;
+
+  display:block;
+}
+
+#linkbar ul li a span{
+
+  padding:0 10px;
+
+  height:36px;
+
+  line-height:36px;
+
+  display:block;
+
+  margin-left: 0px;
+}
+
+#linkbar ul li a:hover{
+
+  height:36px;
+
+  line-height:36px;
+}
+
+#linkbar ul li a:hover span{
+
+  color: #5197FF;
+
+  height:36px;
+
+  line-height:36px;
+
+}

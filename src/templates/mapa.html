@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Mapa
+{% endblock %}
+
+{% block head %}
+  <h1>LOCALIZACIONES</h1>
+{% endblock %}
+
+{% block content %}
+<div id="sectionMap">
+  <div id="mapa"></div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+  var map;
+  var markers = [];
+
+  function initMap() {
+    if (navigator.geolocation) {
+		    navigator.geolocation.getCurrentPosition(function(position){
+
+          var lt = position.coords.latitude;
+          var lon = position.coords.longitude;
+
+          var myLatlng = new google.maps.LatLng(lt,lon);
+
+          var styleArray = [
+            {
+              featureType: "all",
+              stylers: [
+                { saturation: -90 }
+              ]
+            },{
+              featureType: "road.arterial",
+              elementType: "geometry",
+              stylers: [
+                // { hue: "#0e1450 " },
+                { hue: "#034c86" },
+                { saturation: 50 }
+              ]
+            },{
+              featureType: "road.local",
+              elementType: "geometry",
+              stylers: [
+                // { hue: "#263238" },
+                { hue: "#0e1450" },
+                { saturation: 35 },
+                { lightness: 5 }
+              ]
+            },{
+              featureType: "road.highway",
+              elementType: "geometry",
+              stylers: [
+                // { hue: "#034c86" },
+                { hue: "#263238" },
+                { saturation: 10 },
+                { lightness: 10 }
+              ]
+            },{
+              featureType: "water",
+              elementType: "geometry",
+              stylers: [
+                { hue: "#0d47a1" },
+                { saturation: 100 },
+                { lightness: 10 }
+              ]
+            }//,{
+            //   featureType: "poi.business",
+            //   elementType: "labels",
+            //   stylers: [
+            //     { visibility: "off" }
+            //   ]
+            // }
+          ];
+
+          map = new google.maps.Map(document.getElementById('mapa'), {
+            center: myLatlng,
+            zoom: 15
+          });
+
+          map.setOptions({styles: styleArray});
+
+          {% for denuncia in denuncias %}
+            loc = {lat: {{denuncia.latitud}}, lng: {{denuncia.longitud}}};
+            addMarker(loc, map, '{{denuncia.motivo}}', {{denuncia.getSprite}});
+          {% endfor %}
+
+          var image = {
+            url: '/static/images/marcadores.png',
+            size: new google.maps.Size(36,46),
+            origin: new google.maps.Point(0,0),
+            anchor: new google.maps.Point(0,17)
+          };
+
+          var marker = new google.maps.Marker({
+            position: {lat: lt, lng: lon},
+            title: 'Usuario',
+            map: map,
+            icon: image,
+            animation: google.maps.Animation.DROP
+          });
+
+        });
+
+		} else {
+			alert("Para utilizar la geolocalización necesitas actualizar tu navegador.");
+		}
+  }
+
+  function addMarker(loc, map, title, sprite){
+
+    var image = {
+      url: '/static/images/marcadores.png',
+      size: new google.maps.Size(36,46),
+      origin: new google.maps.Point(sprite,0),
+      anchor: new google.maps.Point(0,17)
+    };
+    window.setTimeout(function(){
+      var marker = new google.maps.Marker({
+        position: loc,
+        title: title,
+        map: map,
+        icon: image,
+        animation: google.maps.Animation.DROP
+      });
+      marker.addListener('click', bounceAndNull);
+      markers.push(marker);
+    }, sprite*30);
+  }
+
+  function bounceAndNull(){
+
+    var flag = false;
+
+    for(var i=0; i<markers.length; i++){
+      if(markers[i].title != this.title){
+        markers[i].setMap(null);
+      }else{
+        if (markers[i].getAnimation() !== null) {
+          markers[i].setAnimation(null);
+          flag = true;
+        } else {
+          markers[i].setAnimation(google.maps.Animation.BOUNCE);
+        }
+      }
+    }
+    if(flag){
+      for(var i = 0; i<markers.length; i++){
+        window.setTimeout(mostrarMarcadores(markers[i]), i*400);
+      }
+    }
+  }
+
+  function mostrarMarcadores(marker) {
+    marker.setMap(map);
+    marker.setAnimation(google.maps.Animation.DROP);
+  }
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPIn8C1d9dQLNNnv-Z2D0AKz6WESeZ8tI&callback=initMap"
+    async defer></script>
+{% endblock %}
+
+
+<!-- AIzaSyAPIn8C1d9dQLNNnv-Z2D0AKz6WESeZ8tI -->

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{usuario.username}}
+{% endblock %}
+
+{% block head %}
+<h1>{{usuario.get_full_name}}, <i>{{usuario.username}}</i></h1>
+{% endblock %}
+
+{% block content %}
+<div id="section">
+  <div id="linkbar">
+    <span class="inlinkbar">
+      <ul>
+        <li><a href={% url 'usuario:privado' %}><span>Perfil</span></a></li>
+        <li><span style="color: black;"><i>/</i></span></li>
+        <li><a href={% url 'usuario:lista_u' %}><span>Usuarios</span></a></li>
+        <li><span style="color: black;"><i>/</i></span></li>
+        <li><a href=""><span>{{usuario}}</span></a></li>
+      </ul>
+    </span>
+  </div>
+  <table class="table" style="color: black;">
+      <tr>
+        <th>ID</th>
+        <td>{{usuario.id}}</td>
+      </tr>
+      <tr>
+        <th>Nombre</th>
+        <td>{{usuario.get_full_name}}</td>
+      </tr>
+      <!-- <tr>
+        <th>DPI</th>
+        <td></td>
+      </tr> -->
+      <tr>
+        <th>Usuario</th>
+        <td>{{usuario}}</td>
+      </tr>
+      <tr>
+        <th>Correo</th>
+        <td>{{usuario.correo}}</td>
+      </tr>
+      <tr>
+        <th>Ultima Conexión</th>
+        <td>{{usuario.ultima_conexion}}</td>
+      </tr>
+      {% if usuario.is_active %}
+      <tr>
+        <th>Activo</th>
+        <td>Si</td>
+      </tr>
+      {% else %}
+      <tr>
+        <th>Activo</th>
+        <td>No</td>
+      </tr>
+      {% endif %}
+      <tr>
+        <th>Institucion</th>
+        <td>{{usuario.institucion}}</td>
+      </tr>
+      <tr>
+        <th>Tipo</th>
+        <td>
+          <p>
+            <i>
+              {% if usuario.is_staff %}
+              Super Usuario
+              {% elif usuario.is_admin %}
+              Analisis
+              {% elif usuario.is_res %}
+              Respuesta
+              {% endif %}
+            </i>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <th>Zona</th>
+        <td>
+          <p>
+            <i>
+              {{usuario.zona}},
+               {{usuario.zona.municipio}},
+               {{usuario.zona.municipio.departamento}}
+            </i>
+          </p>
+        </td>
+      </tr>
+  </table>
+</div>
+{% endblock %}

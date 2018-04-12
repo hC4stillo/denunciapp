@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+{% if user.is_staff %}
+Lista de Denuncias
+{% elif request.user.institucion.tipo == 'NG' %}
+{{user.zona}}
+{% else %}
+{{user.institucion}}
+{% endif %}
+
+{% endblock %}
+
+{% block head %}
+<h1>
+  {% if user.is_staff %}
+  DENUNCIAS
+  {% elif request.user.institucion.tipo == 'NG' %}
+  Denuncias de {{user.zona}}
+  {% else %}
+  Denuncias de {{user.institucion}}
+  {% endif %}
+</h1>
+{% endblock %}
+
+{% block content %}
+<div id='section'>
+  <div class = "filtro_estatico">
+    <span id="lupa">Filtro</span>
+    <div class="tabla_filtros">
+      <div class="tabla_columna" style="position: relative; right: 5%;">
+        <div class="filtroF">
+          <label>Buscar por fecha</label></br></br>
+          <h6>Año</h6></br>
+          <select id="anio" name="">
+            <option value="0" selected>----</option>
+          </select>
+          <h6>Mes</h6></br>
+          <select id="mes" name="">
+            <option value="0" >--</option>
+            <option value="1" >Enero</option>
+            <option value="2" >Febrero</option>
+            <option value="3" >Marzo</option>
+            <option value="4" >Abril</option>
+            <option value="5" >Mayo</option>
+            <option value="6" >Junio</option>
+            <option value="7" >Julio</option>
+            <option value="8" >Agosto</option>
+            <option value="9" >Septiembre</option>
+            <option value="10" >Octubre</option>
+            <option value="11" >Noviembre</option>
+            <option value="12" >Diciembre</option>
+          </select>
+          <h6>Día</h6></br>
+          <select id='dia' name="">
+            <option value="0" selected>--</option>
+          </select>
+        </div>
+      </div>
+      <div class="tabla_columna" style="position: relative; left: 14%;">
+        <!-- <div class="filtroN">
+          <label>Buscar por nombre</label></br>
+          <input type="text" id="nombre" value="">
+        </div> -->
+        {% if user.is_staff or user.institucion.tipo == 'NG' %}
+        <div class="filtroN" style="top: 20px;">
+          <label>Buscar por institucion</label></br>
+          <select id='institucion' name="">
+            <option value="0" selected>------</option>
+            {% for institucion in instituciones %}
+            <option value="{{institucion.id}}">{{institucion}}</option>
+            {% endfor %}
+          </select>
+          <!-- <input type="text" id="institucion" value=""> -->
+        </div>
+        {% endif %}
+        <div class="filtroN" style="top: 40px;">
+          <label>Buscar por motivo</label></br>
+          <select id='motivo' name="">
+            <option value="0" selected>------</option>
+            {% for motivo in motivos %}
+            <option value="{{motivo.id}}">{{motivo}}</option>
+            {% endfor %}
+          </select>
+          <!-- <input type="text" id="motivo" value=""> -->
+        </div>
+      </div>
+    </div>
+    <input type="button" id="filtrar" value="Buscar">
+  </div>
+  <div id="linkbar">
+    <span class="inlinkbar">
+      <ul>
+        <li><a href={% url 'usuario:privado' %}><span>Perfil</span></a></li>
+        <li><span style="color: black;"><i>/</i></span></li>
+        <li><a href=""><span>Denuncias</span></a></li>
+      </ul>
+    </span>
+  </div>
+  <table id="tblDatos" class="table" style="color: black;">
+    <tr>
+      <th>ID</th>
+      <!-- <th>Nombre</th> -->
+      <th>Instituciones</th>
+      <th>Motivo</th>
+      <th>Fecha</th>
+    </tr>
+    {% for denuncia in denuncias %}
+    <tr>
+      <td>{{denuncia.id}}</td>
+      <!-- <td>{{denuncia}</td> -->
+      <td>{{denuncia.motivo.get_instituciones}}</td>
+      <td>{{denuncia.motivo}}</td>
+      <td>{{denuncia.fecha}}</td>
+      <td><a href={% url 'usuario:detalles' denuncia.id %}>Ver</a>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="messages">
+    {% if messages %}
+    <table>
+      {% for message in messages %}
+      <tr>
+        <th>
+          <span {% if message.tags %} class="{{ message.tags }}"{% endif %}>...</span>{{message}}
+        </th>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+  </div>
+  <div id="paginador"></div>
+
+  <select id="paginas" class="" name="paginas">
+    <option value="5">5</option>
+    <option value="10" selected>10</option>
+    <option value="20">20</option>
+    <option value="40">40</option>
+  </select>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+$('#document').ready(function(){
+
+  var p = new Paginador(
+    document.getElementById('paginador'),
+    document.getElementById('tblDatos'),
+    10
+  );
+
+  document.getElementById('paginas').addEventListener('change', function(){
+
+    var tbl = document.getElementById('tblPaginador');
+
+    tbl.parentNode.removeChild(tbl);
+
+    p = new Paginador(
+      document.getElementById('paginador'),
+      document.getElementById('tblDatos'),
+      parseInt($('#paginas').val())
+    );
+
+    p.Mostrar();
+
+  });
+
+  p.Mostrar();
+
+  var ahora = new Date();
+  // var dia = ahora.getDate();
+  // var mes = ahora.getMonth();
+  var anio = ahora.getYear();
+
+  if (anio < 2000)
+       anio += 1900;
+
+  var comboA = document.getElementById('anio')
+
+  for(var i=anio; i>2015; i--){
+    var option = document.createElement('option');
+
+    option.value = i;
+    option.innerHTML = i;
+
+    comboA.options.add(option);
+
+  }
+
+});
+
+$('#institucion').on('change', busquedaMo);
+$('#mes').on('change', calcular);
+$('#filtrar').on('click', function(){
+
+  var dia = $('#dia').val();
+  var mes = $('#mes').val();
+  var anio = $('#anio').val();
+  // var nombre = $('#nombre').val();
+  var motivo = $('#motivo').val();
+  var institucion = $('#institucion').val();
+
+  var diaF = "";
+  if(dia!=0)
+    diaF = 'dia='+dia;
+
+  var mesF = "";
+  if(mes!=0)
+    mesF = '&mes='+mes;
+
+  var anioF = "";
+  if(anio!=0)
+    anioF = '&año='+anio;
+
+  // if(nombre!="")
+  //   nombre = '&nombre='+nombre;
+
+  var motF = "";
+  if(motivo!=0)
+    motF = '&motivo='+motivo;
+
+  var instF = "";
+  if(institucion!=0)
+    instF = '&institucion='+institucion;
+
+  var splt = location.href.split('?')
+
+   location.href = splt[0] + '?'+
+                            diaF+
+                            mesF+
+                            anioF+
+                            // nombre+
+                            instF+
+                            motF;
+
+})
+
+function calcular(){
+
+  var id = $(this).val();
+
+  var anio = $('#anio').val();
+
+  var dias = cuantosDias(id, anio);
+
+  var comboD = document.getElementById('dia');
+  comboD.length = 0;
+
+  var p = document.createElement('option');
+  p.value = '0';
+  p.innerHTML = '------';
+
+  comboD.options.add(p);
+
+  for(var i = 1; i<=dias; i++){
+
+    var option = document.createElement('option');
+
+    option.value = i;
+    option.innerHTML = i;
+
+    comboD.options.add(option);
+
+  }
+
+}
+
+function cuantosDias(mes, anyo){
+  var cuantosDias = 31;
+
+  if (mes == "4" || mes == "6" || mes == "7" || mes == "11")
+    cuantosDias = 30;
+  if (mes == "2" && (anyo/4) != Math.floor(anyo/4))
+    cuantosDias = 28;
+  if (mes == "2" && (anyo/4) == Math.floor(anyo/4))
+    cuantosDias = 29;
+
+  return cuantosDias;
+}
+
+function busquedaMo(){
+
+  var id = $(this).val();
+
+  // if(id == 0){
+  //
+  // }
+
+  $.ajax({
+
+    data: {
+      'id': id,
+      'tipo': '0'
+    },
+    url: '/busqMot/mots',
+    type: 'get',
+    success: function(data){
+
+      var mots = document.getElementById('motivo');
+
+      mots.length = 0;
+
+      var p = document.createElement('option');
+      p.value = '0';
+      p.innerHTML = '--';
+
+      mots.options.add(p);
+
+      for (var i = 0; i < data.length; i++) {
+        var nuevo = document.createElement("option");
+
+        nuevo.value = data[i].pk;
+        nuevo.innerHTML = data[i].fields.motivo;
+
+        mots.options.add(nuevo);
+      }
+
+    },
+    error: function(){
+
+      alert('Error con el servidor, por favor recargue e intente de nuevo.');
+
+    }
+
+  })
+
+}
+</script>
+{% endblock %}

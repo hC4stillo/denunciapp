@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Lista de Usuarios
+{% endblock %}
+
+{% block head %}
+<h1>USUARIOS</h1>
+{% endblock %}
+
+{% block content %}
+<div id="section">
+  <div id="linkbar">
+    <span class="inlinkbar">
+      <ul>
+        <li><a href={% url 'usuario:privado' %}><span>Perfil</span></a></li>
+        <li><span style="color: black;"><i>/</i></span></li>
+        <li><a href=""><span>Usuarios</span></a></li>
+        <!-- <li><span style="color: black;"><i>////</i></span></li>
+        <li>
+          <select>
+            <option selected>------</option>
+          </select>
+        </li> -->
+      </ul>
+    </span>
+  </div>
+  <table id='tblDatos' class="table" style="color: black;">
+    <tr>
+      <th>ID</th>
+      <th>Nombre y Apellidos</th>
+      <th>Usuario</th>
+      <th>Institucion</th>
+      <!-- <th>En linea</th> -->
+      <th>Activo</th>
+    </tr>
+    {% for usuario in usuarios %}
+    <tr>
+      <td>{{usuario.id}}</td>
+      <td>{{usuario.get_full_name}}</td>
+      <td>{{usuario.username}}</td>
+      <td><a href='?institucion={{usuario.institucion}}'>{{usuario.institucion}}</a></td>
+      <!-- <td id='active'>
+        <a id='{{usuario.id}}' class='activate' href="#">
+          <span>
+            {% if usuario.is_active %}
+            Activo
+            {% else %}
+            Inactivo
+            {% endif %}
+          </span>
+        <a>
+      </td> -->
+      <!-- <td>
+        {% if usuario.is_authenticated %}
+        Si
+        {% else %}
+        No
+        {% endif %}
+      </td> -->
+      <td>
+        {% if usuario.is_active %}
+        Si
+        {% else %}
+        No
+        {% endif %}
+      </td>
+      <td>
+        <a href={% url 'usuario:detalles_u' usuario.username %}>Ver</a>
+         |
+        <a href={% url 'usuario:editar_u' usuario.username %}>Editar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div id="paginador"></div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript">
+  // $('#deactivate').on('click',function(){
+  //   alert('funciona');
+  // })
+  var p = new Paginador(
+    document.getElementById('paginador'),
+    document.getElementById('tblDatos'),
+    10
+  );
+  p.Mostrar();
+</script>
+{% endblock %}

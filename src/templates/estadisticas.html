@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Estadisticas
+{% endblock %}
+
+{% block head %}
+<h1>ESTADISTICAS</h1>
+{% endblock %}
+
+{% block content %}
+<div id='section'>
+  <div id="sectionTitle">
+    <h1>Total de denuncias</h1></br><span id="help1" class="help">....</span>
+  </div>
+  <div id="chart_div" class="geoChart" ></div>
+  <div class="total"><h3><i>Total: {{total}}</i></h3></div>
+  <div class="graficas">
+    <div id="filter_div"></div>
+    <div id="columnchart"></div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+  $('#help1').on('click',function(){
+    alert("Como usar el sistema de estadisticas?\n\n"+
+              "*El mapa muestra la cantidad de denuncias hechas por\n\n"+
+              " departamento, da un click sobre algun departamento y\n\n"+
+              " te mostrara las estadisticas del departamento.\n\n"+
+              "*La nueva grafica muestra la cantidad de denuncias hechas por\n\n"+
+              " muninicipios, dividiendolas por motivo de denuncia.\n\n"+
+              "*Da un click sobre la barra de algun municipio, esta te\n\n"+
+              " redirigira a la pagina de estadisticas del municipio.")
+  });
+  google.charts.load('visualization', '1', {'packages': ['geochart', 'corechart', 'controls']});
+  google.charts.setOnLoadCallback(drawMarkersMap);
+  $("#columnchart").hide();
+
+  function drawMarkersMap() {
+
+    var deps = [
+        ['States','Departamento', 'Denuncias'],
+        {% for dato in departamentos %}
+          ['{{dato.codigo}}','{{dato.nombre}}',{{dato.sumMunicipios}}],
+        {% endfor %}
+      ];
+
+    var datos = google.visualization.arrayToDataTable(deps);
+
+    var options = {
+       backgroundColor: '#white',
+       datalessRegionColor: '#C0C0C0',
+       defaultColor: '#4D4D50',
+       region: 'GT',
+       //displayMode: 'markers',
+       resolution: 'provinces',
+       //FAE398
+       colorAxis: {colors: ['#FDF1CB','#FFC400','#DF0000']},
+    };
+
+    var chart = new google.visualization.GeoChart(document.getElementById('chart_div'));
+    chart.draw(datos, options);
+
+    google.visualization.events.addListener(chart, 'ready', function () {
+      var print = document.createElement('a');
+      var span = document.createElement('span');
+      var text = document.createTextNode('Imprimir');
+      print.id = 'print';
+      print.title = 'Version para imprimir.'
+      print.href = chart.getImageURI();
+      print.target = '_blank';
+      span.id = 'normal';
+      span.appendChild(text);
+      print.appendChild(span);
+      document.getElementById("chart_div").appendChild(print);
+    });
+
+    google.visualization.events.addListener(chart, 'select', function() {
+      var seleccion = chart.getSelection();
+      var code = datos.getValue(seleccion[0].row, 0);
+      var dep = datos.getValue(seleccion[0].row, 1);
+      console.log(code);
+
+
+      document.getElementById("columnchart").style.display = 'block';
+      $("#columnchart").show();
+
+      var pos = $('#columnchart').offset();
+      window.scrollTo(pos.left, pos.top-100);
+
+      $.ajax({
+
+        data: {'code': code},
+        url: "{% url 'local:dens' %}",
+        type: 'get',
+        success: function(data){
+
+          var lista = [[
+            'Municipio',
+            {% for dato in motivos %}
+              '{{dato.motivo}}',
+            {% endfor %}
+          ]];
+
+          // console.dir(data);
+
+
+         for(var i=0; i<data.length;i++){
+           lista.push([
+             data[i].fields.nombre,
+             {% for dato in motivos %}
+             data[i].mots.{{dato.motivo_hash}},
+             {% endfor %}
+           ]);
+         }
+
+          var tabla = new google.visualization.arrayToDataTable(lista);
+
+          var options1 = {
+            title: dep,
+            legend: { position: 'top', maxLines: 4 },
+            bar: { groupWidth: '75%' },
+            // isStacked: 'percent',
+            isStacked: true,
+            animation:{
+                duration: 1500,
+                easing: 'out',
+                startup: true,
+            },
+            vAxis:{
+              format: 'decimal',
+              minValue: 0,
+              // ticks: [0, .3, .6, .9, 1]
+            },
+          };
+
+          var chart1 = new google.visualization.ColumnChart(document.getElementById('columnchart'));
+
+          google.visualization.events.addListener(chart1, 'ready', function () {
+            var print = document.createElement('a');
+            var span = document.createElement('span');
+            var text = document.createTextNode('Imprimir');
+            print.id = 'print';
+            print.title = 'Version para imprimir.'
+            print.href = chart1.getImageURI();
+            print.target = '_blank';
+            span.id = 'normal';
+            span.appendChild(text);
+            print.appendChild(span);
+            document.getElementById("columnchart").appendChild(print);
+          });
+
+          chart1.draw(tabla, options1);
+
+          google.visualization.events.addListener(chart1, 'select', function(){
+
+            try{
+              var sel = chart1.getSelection();
+
+              var x = tabla.getValue(sel[0].row, 0);
+
+              var splt = dep.split(" ");
+              var splt1 = x.split(" ");
+
+              var tmp = splt[0];
+              for(var i=1;i<splt.length;i++){
+                tmp = tmp + '_' + splt[i];
+              }
+
+              var tmp1 = splt1[0];
+              for(var i=1;i<splt1.length;i++){
+                tmp1 = tmp1 + '_' + splt1[i];
+              }
+
+              location.href = location.href +tmp+'/'+tmp1;
+            }catch(err){
+              //alert(err);
+            }
+          });
+
+        },
+        error: function(){
+          alert('Ocurrió un error con el servidor, intenta de nuevo más tarde.')
+        }
+
+      })
+
+
+    });
+  };
+
+</script>
+
+{% endblock %}

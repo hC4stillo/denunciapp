@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Denuncia No. {{denuncia.id}}
+{% endblock %}
+
+{% block head %}
+<h1>Denuncia No. {{denuncia.id}} | <i>{{denuncia.motivo}}, {{denuncia.motivo.institucion}}</i></h1>
+{% endblock %}
+
+{% block content %}
+<div id='section'>
+  <div id="linkbar">
+    <span class="inlinkbar">
+      <ul>
+        <li><a href={% url 'usuario:privado' %}><span>Perfil</span></a></li>
+        <li><span style="color: black;"><i>/</i></span></li>
+        <li><a href={% url 'usuario:lista' %}><span>Denuncias</span></a></li>
+        <li><span style="color: black;"><i>/</i></span></li>
+        <li><a href=""><span>Denuncia No. {{denuncia.id}}</span></a></li>
+      </ul>
+    </span>
+  </div>
+  <table class="table" style="color: black;">
+      <tr>
+        <th>ID</th>
+        <td>{{denuncia.id}}</td>
+      </tr>
+      <!-- <tr>
+        <th>Nombre</th>
+        <td>{{denuncia.nombre}}</td>
+      </tr>
+      <tr>
+        <th>DPI</th>
+        <td>{{denuncia.dpi}}</td>
+      </tr>
+      <tr>
+        <th>Telefono</th>
+        <td>{{denuncia.telefono}}</td>
+      </tr> -->
+      <tr>
+        <th>Fecha</th>
+        <td>{{denuncia.fecha}}<h6><!--<a href="#">Más de esta fecha.</a></h6>--></td>
+      </tr>
+      <tr>
+        <th>Motivo</th>
+        <td>{{denuncia.motivo}}</td>
+      </tr>
+      <tr>
+        <th>Denuncia</th>
+        <td><p><i>{{denuncia.denuncia}}</i></p></td>
+      </tr>
+      <tr>
+        <th>Direccion</th>
+        <td>{{denuncia.direccion}},  <i>{{denuncia.direccion.municipio}}, {{denuncia.direccion.municipio.departamento}}</i></td>
+      </tr>
+      <tr>
+        <th>Referencia</th>
+        <td>{{denuncia.referencia}}</td>
+      </tr>
+      {% if geo %}
+      <tr>
+        <th>Ubicación</th>
+        <td><img src="https://maps.googleapis.com/maps/api/staticmap?center={{denuncia.latitud}},{{denuncia.longitud}}&markers=color:0x3067B0%7Clabel:{{label}}%7C{{denuncia.latitud}},{{denuncia.longitud}}&zoom=17&size=400x200&key=AIzaSyAPIn8C1d9dQLNNnv-Z2D0AKz6WESeZ8tI" alt="Ubicación" /></td>
+      </tr>
+      {% endif %}
+  </table>
+</div>
+{% endblock %}

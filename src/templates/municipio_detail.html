@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{municipio.nombre}}
+{% endblock %}
+
+{% block head %}
+  <h1>{{municipio.nombre}}, {{municipio.departamento}}</h1>
+{% endblock %}
+
+{% block content %}
+<div id="section">
+  <div id="chart"></div>
+  <div id="dashboard_div">
+    <div id="filter_div"></div>
+    <div id = "piechart"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+google.charts.load('visualization', '1', {'packages': ['corechart']});
+google.charts.setOnLoadCallback(draw);
+$('#piechart').hide();
+
+function draw() {
+        // Some raw data (not necessarily accurate)
+        var data = google.visualization.arrayToDataTable([
+          ["Zona", "Denuncias", {role: 'annotation'}, "id"],
+          {% for dato in dirs %}
+            ['{{dato.direccion}}',{{dato.sumDenuncias}}, '{{dato.sumDenuncias}}',{{dato.id}}],
+          {% endfor %}
+        ]);
+
+    var options = {
+      title : 'Denuncias del Municipio',
+      hAxis: {title: 'Denuncias'},
+      vAxis: {title: 'Zona'},
+      bar: {groupWidth: "75%"},
+      legend: { position: "none" },
+      animation:{
+          duration: 1500,
+          easing: 'out',
+          startup: true,
+      },
+      colors: ['#4370bb'],
+      hAxis:{
+        format: 'decimal',
+        minValue: 0,
+      },
+    };
+
+    var chart = new google.visualization.BarChart(document.getElementById('chart'));
+
+    google.visualization.events.addListener(chart, 'ready', function () {
+      var print = document.createElement('a');
+      var span = document.createElement('span');
+      var text = document.createTextNode('Imprimir');
+      print.id = 'print';
+      print.title = 'Version para imprimir.'
+      print.href = chart.getImageURI();
+      print.target = '_blank';
+      span.id = 'normal';
+      span.appendChild(text);
+      print.appendChild(span);
+      document.getElementById("chart").appendChild(print);
+    });
+
+    var view = new google.visualization.DataView(data);
+    view.hideColumns([3]);
+
+    chart.draw(view, options);
+
+    google.visualization.events.addListener(chart, 'select', function(){
+
+      try{
+        var seleccion = chart.getSelection();
+        var zona = data.getValue(seleccion[0].row, 3);
+
+        $("#piechart").show();
+
+        var pos = $('#piechart').offset();
+        window.scrollTo(pos.left, pos.top-80);
+
+        $.ajax({
+
+          data: {'zona': zona},
+          url: "{% url 'local:detalleZona' %}",
+          type: 'get',
+          success: function(data) {
+
+            var datos = google.visualization.arrayToDataTable([
+              ['Motivo', 'Tipo', 'Denuncias'],
+              {% for motivo in motivos %}
+                ['{{motivo}}', '{{motivo.tipo}}', data[0].mots.{{motivo.motivo_hash}}],
+              {% endfor %}
+            ]);
+
+            var opciones = {
+              title: data[0].fields.direccion,
+              pieHole: 0.35,
+            }
+
+            var grafica = new google.visualization.PieChart(document.getElementById('piechart'));
+
+            google.visualization.events.addListener(grafica, 'ready', function () {
+              var print = document.createElement('a');
+              var span = document.createElement('span');
+              var text = document.createTextNode('Imprimir');
+              print.id = 'print';
+              print.title = 'Version para imprimir.'
+              print.href = grafica.getImageURI();
+              print.target = '_blank';
+              span.id = 'normal';
+              span.appendChild(text);
+              print.appendChild(span);
+              document.getElementById('piechart').appendChild(print);
+            });
+
+            var view1 = new google.visualization.DataView(datos);
+            view1.hideColumns([1]);
+
+            grafica.draw(view1, opciones);
+
+          },
+          error: function(){
+            alert('Ocurrió un error con el servidor, intenta de nuevo más tarde.')
+          }
+
+        });
+      }catch(err){
+
+      }
+    });
+  }
+
+</script>
+{% endblock %}

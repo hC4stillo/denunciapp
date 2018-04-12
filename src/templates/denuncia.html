@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Denuncias
+{% endblock %}
+
+{% block head %}
+  <h1>REALIZAR DENUNCIA</h1>
+{% endblock %}
+
+{% block content %}
+<div id="section">
+  <div class="messages">
+    {% if messages %}
+    <table>
+      {% for message in messages %}
+      <tr>
+        <th>
+          <span {% if message.tags %} class="{{ message.tags }}"{% endif %}>...</span>{{message}}
+        </th>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+  </div>
+  <!-- <div class = "radioBtn">
+    <div class="bloqueOne">
+      <input type="radio" name="tipo" value="anonimo" checked onClick="deshabilita()">
+      <label>Anonima</label>
+    </div>
+    <div class="bloqueTwo">
+      <input type="radio" name="tipo" value="personal" onClick="habilita()">
+      <label>Personal</label>
+    </div>
+  </div> -->
+  <div id="bloqueForms">
+    <form id="form1" method="POST" action='' enctype='multipart/form-data'>
+      {% csrf_token %}
+        <div class="form-group">
+          <!-- <div id="ident" style="display: none;">
+            <div>
+              <label>Nombre</label></br>
+                {{form.nombre}} </br>
+            </div>
+            <div>
+              <label>DPI</label></br>
+                {{form.dpi}} </br>
+            </div>
+            <div>
+              <label>Telefono</label></br>
+                {{form.telefono}}</br>
+            </div>
+          </div> -->
+          <div>
+          <label>Descripcion</label></br>
+            {{form.denuncia}} </br>
+          </div>
+          <div>
+            <label>Departamento</label></br>
+            <select id="dep" name="dep">
+              <option value="0" selected>------</option>
+              {% for dato in departamentos %}
+                <option value="{{dato.id}}">{{dato.nombre}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label>Municipio</label></br>
+            <select id="muni_id" name="muni">
+              <option selected>------</option>
+            </select>
+          </div>
+          <div>
+          <label>Zona</label></br>
+            {{form.direccion}} </br>
+          </div>
+          <div>
+            <label>Referencia</label></br>
+              {{form.referencia}}</br><span id="help1" class="help">....</span></br>
+          </div>
+          <div>
+          <label>Foto/Video</label></br>
+            <input type="file" id="file" name="file" accept="image/*, video/*"></br>
+          </div>
+          <div>
+            <label>Tipo</label></br>
+              {{form.tipo}} </br>
+          </div>
+          <div>
+            <label>Motivo</label></br>
+              {{form.motivo}} </br>
+          </div>
+          <div id="btnForm">
+          </br>
+            <input type="submit" class="btn btn-default" value='Enviar'>
+          </br>
+          </div>
+          <div id="coord" style="display: none;">
+            <input id="lat" type="hidden" name="lat" value=0>
+            <input id="lon" type="hidden" name="lon" value=0>
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+
+<script type = "text/javascript">
+
+  // $('#logo').fadeIn(2000);
+
+  $('#dep').on('change', busquedaMuni);
+  $('#muni_id').on('change', busquedaDir);
+  $('#id_tipo').on('change', busquedaMot);
+  $('#help1').on('click', mostrar);
+  $('#document').ready(getGeolocation);
+  // $('#id_motivo').on('change', function(){
+  //   if(document.getElementById('id_denuncia').value == "")
+  //     document.getElementById('id_denuncia').value = $('#id_motivo option:selected').text();
+  // });
+
+  // $('select').ajaxStart(function() {
+  //   console.log('hola');
+  //   var img = document.createElement('img');
+  //   img.src = 'static/images/ajax-loader.gif';
+  //   img.id = 'cargando';
+  //   img.width = '32px';
+  //   img.height = '32px';
+  //   $(this).before(img);
+  // })
+
+  document.getElementById('muni_id').length = 0;
+  document.getElementById('id_direccion').length = 0;
+  document.getElementById('id_motivo').length = 0;
+
+  // function habilita(){
+  //   document.getElementById("id_nombre").disabled = false;
+  //   document.getElementById("id_dpi").disabled = false;
+  //   document.getElementById("ident").style.display = 'block'
+  // }
+  //
+  // function deshabilita(){
+  //   document.getElementById("id_nombre").disabled = true;
+  //   document.getElementById("id_dpi").disabled = true;
+  //   document.getElementById("ident").style.display = 'none';
+  // }
+
+  function busquedaMuni(){
+    // var img = document.createElement('img');
+    // img.src = 'static/images/ajax-loader.gif';
+    // img.id = 'cargando';
+    // img.width = '32px';
+    // img.height = '32px';
+    // $(this).before('<img style="width=32px;" height="32px" src="static/images/ajax-loader.gif"></img>');
+
+    var id = $(this).val();
+    $.ajax({
+
+      data: {'id': id},
+      url: "{% url 'local:muni' %}",
+      type: 'get',
+      success: function(data){
+
+        var inner = document.getElementById('muni_id');
+
+        inner.innerHTML = "";
+        var p = document.createElement("option");
+
+        p.value = "0";
+        p.innerHTML = "------";
+
+        inner.options.add(p);
+        for (var i = 0; i<data.length; i++){
+
+          var nuevo = document.createElement("option");
+
+          nuevo.value = data[i].pk;
+          nuevo.innerHTML = data[i].fields.nombre;
+
+          inner.options.add(nuevo);
+
+        }
+        // img.parentNode.removeChild(img);
+      },
+      error: function(){
+        alert('Ocurrió un error con el servidor, intenta de nuevo más tarde.');
+        img.parentNode.removeChild(img);
+      }
+
+    })
+
+  }
+
+  function busquedaDir(){
+
+    var id = $(this).val();
+    $.ajax({
+
+      data: {'id': id},
+      url: "{% url 'local:dirs' %}",
+      type: 'get',
+      success: function(data){
+        document.getElementById('id_direccion').length = 0;
+
+        var inner = document.getElementById('id_direccion');
+        console.log(inner);
+
+        for(var i = 0; i<data.length; i++){
+
+          var nuevo = document.createElement("option");
+
+          console.log(data[i].fields.direccion);
+
+          nuevo.value = data[i].pk;
+          nuevo.innerHTML = data[i].fields.direccion;
+
+          inner.options.add(nuevo);
+
+        }
+
+      },
+      error: function(){
+        alert('Ocurrió un error con el servidor, intenta de nuevo más tarde.')
+      }
+
+    })
+
+  }
+
+  function busquedaMot(){
+
+    var id = $('#id_tipo').val();
+    $.ajax({
+
+      data: {'id': id},
+      url: '/busqMot/mots',
+      type: 'get',
+      success: function(data){
+
+        document.getElementById('id_motivo').length = 0;
+
+        var inner = document.getElementById('id_motivo');
+        console.log(inner);
+
+        for(var i = 0; i<data.length; i++){
+
+          var nuevo = document.createElement("option");
+
+          nuevo.value = data[i].pk;
+          nuevo.innerHTML = data[i].fields.motivo;
+
+          inner.options.add(nuevo);
+
+        }
+
+      },
+      error: function(){
+        alert('Ocurrió un error con el servidor, intenta de nuevo más tarde.')
+      }
+
+    })
+
+  }
+
+  function mostrar(){
+    alert('Escribe un punto de referencia a la direccion.')
+  }
+
+	function getGeolocation() {
+    busquedaMot();
+		if (navigator.geolocation) {
+		    navigator.geolocation.getCurrentPosition(function(position){
+
+          var lat = position.coords.latitude;
+          var lon = position.coords.longitude;
+
+          document.getElementById('lat').value = lat;
+          document.getElementById('lon').value = lon;
+        });
+		} else {
+			alert("Para utilizar la geolocalización necesitas actualizar tu navegador.");
+		}
+	}
+
+</script>
+
+{% endblock %}

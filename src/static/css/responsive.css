@@ -1,0 +1,29 @@
+@media only screen and (min-width: 992px){
+  .bloqueForms form{ width: 40%; }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px){
+  body{ font-size: : 13px; }
+  p{ line-height: 20px; }
+  label{ font-size: 25px; }
+  h2{ font-size: : 30px; }
+  h6{ font-size: 15px; }
+  div label{ float: none; }
+  .bloqueForms form{ width: 47%; }
+}
+
+@media only screen and (max-width: 767px){
+  body{ font-size: : 12px; }
+  h2{ font-size: 26px; }
+  h3{ font-size: 14px; }
+  p{ line-height: 18px; }
+  label{ font-size: 20px; }
+  div label{ float: none; }
+  .bloqueForms form{ width: 47%; }
+}
+
+@media only screen and (max-width: 479px){
+  .bloqueForms form{ width: 65%; }
+  label{ font-size: 17px; }
+  div label{ float: none; }
+}

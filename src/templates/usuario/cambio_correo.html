@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Cambiar Correo
+{% endblock %}
+
+{% block head %}
+<h1>Cambiar Correo</h1>
+{% endblock %}
+
+{% block content %}
+<div id="section">
+  <div id="bloqueForms">
+    <div class="messages">
+      {% if messages %}
+      <table>
+        {% for message in messages %}
+        <tr>
+          <th>
+            <span {% if message.tags %} class="{{ message.tags }}"{% endif %}>...</span>{{message}}
+          </th>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+    </div>
+    <h5>Correo actual: <i>{{user.correo}}</i></h5>
+    <form action="" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <div>
+          <label>Correo nuevo</label></br>
+          <input type="mail" name="correo" value=""></br>
+        </div>
+        <div id="btnForm">
+          <input type="submit" class="btn btn-default" value="Confirmar"></br>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Editar {{usuario}}
+{% endblock %}
+
+{% block head %}
+<h1>{{usuario.get_full_name}}, <i>{{usuario.username}}</i></h1>
+{% endblock %}
+
+{% block content %}
+<div id ="section">
+  <div id="linkbar">
+    <span class="inlinkbar">
+      <ul>
+        <li><a href={% url 'usuario:privado' %}><span>Perfil</span></a></li>
+        <li><span style="color: black;"><i>/</i></span></li>
+        <li><a href={% url 'usuario:lista_u' %}><span>Usuarios</span></a></li>
+        <li><span style="color: black;"><i>/</i></span></li>
+        <li><a href=""><span>Editar {{usuario}}</span></a></li>
+      </ul>
+    </span>
+  </div>
+  <div id="bloqueForms">
+
+    </br>
+    </br>
+    </br>
+    </br>
+    <form action="" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <div>
+          <label>Nombre</label></br>
+          {{form.nombre}}</br>
+        </div>
+        <div>
+          <label>Apellidos</label></br>
+          {{form.apellidos}}</br>
+        </div>
+        <div>
+          <label>Correo</label></br>
+          {{form.correo}}</br>
+        </div>
+        <div>
+          <label>SU</label></br>
+          {{form.is_staff}}</br>
+        </div>
+        <div>
+          <label>Analisis</label></br>
+          {{form.is_admin}}</br>
+        </div>
+        <div>
+          <label>Respuesta</label></br>
+          {{form.is_res}}</br>
+        </div>
+        <div>
+          <label>Activo</label></br>
+          {{form.is_active}}</br>
+        </div>
+        <div>
+          <label>Institucion</label></br>
+          {{form.institucion}}</br>
+        </div>
+        <div>
+          <label>Departamento</label></br>
+          <select id="deps" class="" name="deps1">
+            <option value="0" selected>------</option>
+            {% for departamento in departamentos %}
+            <option value="{{departamento.id}}" {% if departamento.id == user.zona.municipio.departamento.id %} selected {% endif %}>{{departamento}}</option>
+            {% endfor %}
+          </select></br>
+        </div>
+        <div>
+          <label>Municipio</label></br>
+          <select id="muni" class="" name="muni1">
+            <option value="0" selected>------</option>
+          </select></br>
+        </div>
+        <div>
+          <label>Zona</label></br>
+          {{form.zona}}</br>
+        </div>
+        <div>
+          <label>Institucion</label></br>
+          {{form.institucion}}</br>
+        </div>
+        <div id="btnForm">
+          <input type="submit" class="btn btn-default" value="Guardar">
+        </div>
+      </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+  $('#deps').on('change', busquedaMuni);
+  $(document).ready(busquedaMuni);
+  $('#muni').on('change', busquedaDir);
+  $('#id_is_staff').on('change', seleccionar);
+  $('#id_is_admin').on('change', seleccionar);
+  $('#id_is_res').on('change', seleccionar);
+
+  document.getElementById('id_zona').length = 0;
+
+  function busquedaMuni(){
+
+    var id = $('#deps').val();
+    $.ajax({
+
+      data: {'id': id},
+      url: "{% url 'local:muni' %}",
+      type: 'get',
+      success: function(data){
+
+        var inner = document.getElementById('muni');
+
+        inner.innerHTML = "";
+        var p = document.createElement("option");
+
+        var municipio = "{{user.zona.municipio}}";
+
+        // console.log(data[i].fields.nombre)
+
+        p.value = "0";
+        p.innerHTML = "------";
+
+        inner.options.add(p);
+        for (var i = 0; i<data.length; i++){
+
+          var nuevo = document.createElement("option");
+
+          // console.log(data[i].fields.nombre)
+
+          nuevo.value = data[i].pk;
+          nuevo.innerHTML = data[i].fields.nombre;
+          if(nuevo.innerHTML == municipio)
+            nuevo.selected = true;
+
+          inner.options.add(nuevo);
+
+        }
+
+        busquedaDir();
+
+      }
+
+    })
+
+  }
+
+  function busquedaDir(){
+
+    var id = $('#muni').val();
+    $.ajax({
+
+      data: {'id': id},
+      url: "{% url 'local:dirs' %}",
+      type: 'get',
+      success: function(data){
+        document.getElementById('id_zona').length = 0;
+
+        var inner = document.getElementById('id_zona');
+        var zona = '{{user.zona}}';
+
+        for(var i = 0; i<data.length; i++){
+
+          var nuevo = document.createElement("option");
+
+          nuevo.value = data[i].pk;
+          nuevo.innerHTML = data[i].fields.direccion;
+
+          if(nuevo.innerHTML == zona)
+            nuevo.selected = true;
+
+          inner.options.add(nuevo);
+
+        }
+
+      }
+
+    })
+
+  }
+
+  function seleccionar(){
+    // $(this).prop('checked')
+    var check = $(this);
+
+    var lista = $('input[type=checkbox]');
+
+    for (var i = 0; i < lista.length - 1; i++) {
+      if(lista[i]!=check[0]){
+        lista[i].checked = false;
+      }
+    }
+
+  }
+
+</script>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{user.get_full_name}}
+{% endblock %}
+
+{% block head %}
+  <!-- <h1>¡Bienvenido {{user}}!</h1> -->
+{% endblock %}
+
+{% block content %}
+<div id="section">
+  <div class = "tablaCentro" style="position: relative; right: 30%;">
+    <table class="table">
+      <tr>
+          <td>Nombre de usuario</td>
+          <td><i>{{user}}</i></td>
+      </tr>
+      <tr>
+          <td>Correo</td>
+          <td><i>{{user.correo}}</i></td>
+      </tr>
+      <tr>
+          <td>Institucion</td>
+          <td><i>{{user.institucion}}</i></td>
+      </tr>
+      <tr>
+          <td>Ultima conexion</td>
+          <td><i>{{user.ultima_conexion}}</i></td>
+      </tr>
+      <tr>
+          <td>Tipo de Usuario</td>
+          <td><i>
+            {% if user.is_staff %}
+            Super Usuario
+            {% elif user.is_admin %}
+            Analisis
+            {% elif user.is_res %}
+            Respuesta
+            {% endif %}
+          </i></td>
+      </tr>
+    </table>
+    <table style="position: relative; top: 18%;">
+      <tr>
+        {% if user.is_staff %}
+        <td><a href={% url 'usuario:lista_u' %}><span> Usuarios </span></a></td>
+        <td><span>|</span></td>
+        {% endif %}
+        <td><a href={% url 'usuario:cambiarPass' %}><span>Cambiar Contraseña</span></a></td>
+        <td><span>|</span></td>
+        <td><a href={% url 'usuario:cambiarCorreo' %}><span>Configurar Correo</span></a></td>
+        <!-- <td><span>|</span></td>
+        <td><a href="#"><span>d</span></a></td> -->
+      </tr>
+    </table>
+  </div>
+  <div id="line-chart">
+
+  </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Día');
+      data.addColumn('number', "{{tiempo1}}");
+      data.addColumn('number', "{{tiempo2}}");
+      data.addColumn('number', "{{tiempo3}}");
+
+
+      data.addRows([
+        {% for dia, cant1, cant2, cant3 in denuncias %}
+          ['{{dia}}', {{cant1}}, {{cant2}}, {{cant3}}],
+        {% endfor %}
+      ]);
+
+      var options = {
+        chart: {
+          title: 'Denuncias mensuales.',
+          subtitle: 'Ultimos 3 meses.'
+        },
+        // width: 700,
+        // height: 400,
+        // animation: {
+        //   duration: 1500,
+        //   easing: 'out',
+        //   startup: true,
+        // },
+      };
+
+      var chart = new google.charts.Line(document.getElementById('line-chart'));
+
+      chart.draw(data, options);
+    }
+
+</script>
+{% endblock %}

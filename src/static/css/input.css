@@ -1,0 +1,78 @@
+input, select{
+  color: #000;
+  max-width: 400px;
+  max-height: 300px;
+  min-height: 5px;
+  min-width: 150px;
+  width: 25%;
+  height: 100%;
+  margin-left: -10%;
+  clear: both;
+  font-family: 'Roboto', sans-serif;
+}
+
+textarea{
+  min-width: 150px;
+  max-width: 400px;
+  max-height: 300px;
+  min-height: 5px;
+  width: 25%;
+  height: 150px;
+  margin-left: -10%;
+  clear: both;
+  font-family: 'Roboto', sans-serif;
+}
+
+input[type='file']{
+  width: 50%;
+  height: 100%;
+  font-size-adjust: .45;
+  margin-left: 15%;
+  clear: both;
+}
+
+input[type='radio']{
+  width: 50%;
+  height: 100%;
+  font-size-adjust: .45;
+  margin-left: 25%;
+  min-width: 10px;
+  clear: both;
+}
+
+input[type='submit']{
+  min-width: 150px;
+  max-width: 400px;
+  width: 70%;
+  height: 100%;
+  font-size-adjust: .5;
+  clear: both;
+  margin-left: -100%;
+  font-family: 'Montserrat', sans-serif;
+  background: #CC0C19;
+  color: #FFF;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  border: 0;
+}
+
+input[type='submit']:hover{
+  background: #0f6f91;
+  color: #FFF;
+}
+
+/*input[type='text']{
+  min-width: 150px;
+  max-width: 400px;
+  width: 70%;
+  height: 100%;
+  font-size-adjust: .5;
+  clear: both;
+  margin-left: -60%;
+}*/
+
+input[type=text]:focus,textarea:focus {
+	border-color: #144777;
+  clear: both;
+}

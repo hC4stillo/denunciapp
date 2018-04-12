@@ -1,0 +1,102 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    {% block title %}{% endblock %} | DenunciApp
+  </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href='{% static "images/logo.png" %}' type="image/png" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Montserrat|Patua+One" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <link href='{% static "css/default.css" %}' rel="stylesheet" type="text/css" />
+    <link href='{% static "css/barra.css" %}' rel="stylesheet" type="text/css" />
+    <link href='{% static "css/input.css" %}' rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id='header-static'>
+  <header id="header-wrapper">
+    <div class="logo">
+      <img src='{% static "images/logo_sf.png" %}' alt="DenunciApp" />
+      <table>
+        <tr>
+          <td>
+            <strong>D</strong>enunciApp
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id="navbar">
+      <span class="inbar">
+        <ul>
+          <li class="navhome"><a href="/denunciar"><span>Denuncia</span></a></li>
+          <li><a href="/estadisticas"><span>Estadisticas</span></a></li>
+          <li><a href="/mapa"><span>Mapa</span></a></li>
+          {% if not user.is_authenticated %}
+          <li><a href="/"><span>Iniciar Sesión</span></a></li>
+          {% else %}
+          <li class="paranga"><a href={% url 'usuario:privado' %}><span>{{user}}</span></a>
+            <ul id="usuario">
+              <li><a href={% url 'usuario:lista' %}><span>Denuncias</span></a></li>
+              {% if user.is_staff %}
+              <li><a href={% url 'usuario:lista_u' %}><span>Usuarios</span></a></li>
+              <li><a href={% url 'usuario:registro' %}><span>Crear Usuario</span></a></li>
+              {% endif %}
+              <li><a href="/logout"><span>Cerrar Sesión</span></a></li>
+            </ul>
+          </li>
+          {% endif %}
+        </ul>
+      </span>
+    </div>
+  </header>
+
+  <div class="title">
+    {% block head %}
+    {% endblock %}
+  </div>
+</div>
+
+  <div class="jocote" align="CENTER">
+    {% block content %}
+
+    {% endblock %}
+  </div>
+
+
+{% block js %}
+
+
+{% endblock %}
+
+<footer id="finalPag">
+  <div>
+    <ul id="social">
+      <li class="facebook">
+        <a href="https://www.facebook.com">
+          <span class='normal'>compartir</span>
+        </a>
+      </li>
+      <li class="twitter">
+        <a href="https://www.twitter.com">
+          <span class='normal'>Compartir</span>
+        </a>
+      </li>
+      <li class="google">
+        <a href="https://plus.google.com">
+          <span class="normal">compartir</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <p>
+    © 2017
+  </p>
+</footer>
+</body>
+<script type="text/javascript" src='{% static "js/paginador.js" %}'></script>
+</html>
